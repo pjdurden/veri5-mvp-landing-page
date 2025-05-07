@@ -1,7 +1,7 @@
 "use client";
 
 import "./globals.css";
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { CheckCircle, ShieldCheck, Zap } from "lucide-react";
@@ -29,7 +29,7 @@ export default function LandingPage() {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await addDoc(collection(db, "waitlist"), { email });
