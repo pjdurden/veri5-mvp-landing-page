@@ -1,0 +1,29 @@
+/* Customize top bar */
+.swagger-ui .topbar {
+    background-color: #1e3a8a; /* Tailwind blue-900 */
+  }
+  
+  /* Topbar text */
+  .swagger-ui .topbar .download-url-wrapper input {
+    background-color: white;
+    color: #1e3a8a;
+  }
+  
+  /* Operation button color */
+  .swagger-ui .opblock .opblock-summary-method {
+    background: #2563eb; /* Tailwind blue-600 */
+    color: white;
+  }
+  
+  /* Section header */
+  .swagger-ui .opblock-tag {
+    background: #e0f2fe; /* light blue */
+    border-bottom: 1px solid #1e3a8a;
+  }
+  
+  /* Response code colors */
+  .swagger-ui .response-col_status {
+    color: #1e3a8a;
+    font-weight: bold;
+  }
+  

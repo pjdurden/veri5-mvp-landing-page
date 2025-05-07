@@ -8,17 +8,13 @@ import yaml from "js-yaml";
 const OpenAPIDocs = () => {
   const [swaggerSpec, setSwaggerSpec] = useState(null);
 
-  // Fetch and parse the OpenAPI YAML file
   useEffect(() => {
     const fetchOpenAPIDocs = async () => {
       try {
-        // Fetch the YAML file from public directory
-        const response = await fetch("/openapi.yaml"); // Adjust path based on where your file is
+        const response = await fetch("/api-docs.yaml"); // ✅ Correct path
         const yamlText = await response.text();
-
-        // Parse YAML to JSON
         const spec = yaml.load(yamlText);
-        setSwaggerSpec(spec); // Set the parsed spec
+        setSwaggerSpec(spec);
       } catch (error) {
         console.error("Error loading OpenAPI spec", error);
       }
@@ -28,7 +24,7 @@ const OpenAPIDocs = () => {
   }, []);
 
   if (!swaggerSpec) {
-    return <div>Loading API Documentation...</div>; // Loading indicator
+    return <div className="text-center py-10">Loading API Documentation...</div>;
   }
 
   return (
@@ -40,8 +36,9 @@ const OpenAPIDocs = () => {
         </p>
       </section>
 
-      {/* Pass the parsed Swagger spec to Swagger UI */}
-      <SwaggerUI spec={swaggerSpec} />
+      <div className="px-4 pb-10">
+        <SwaggerUI spec={swaggerSpec} />
+      </div>
     </div>
   );
 };
