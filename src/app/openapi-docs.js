@@ -1,46 +1,25 @@
-"use client";
+import { useEffect, useState } from "react";
+import SwaggerClientView from "components/SwaggerClientView";
+import Loader from "components/Loader";  // Import the loader
 
-import React, { useEffect, useState } from "react";
-import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
-import yaml from "js-yaml";
-
-const OpenAPIDocs = () => {
-  const [swaggerSpec, setSwaggerSpec] = useState(null);
+export default function OpenAPIDocsPage() {
+  const [isLoading, setIsLoading] = useState(true);  // State for loading
 
   useEffect(() => {
-    const fetchOpenAPIDocs = async () => {
-      try {
-        const response = await fetch("/api-docs.yaml"); // ✅ Correct path
-        const yamlText = await response.text();
-        const spec = yaml.load(yamlText);
-        setSwaggerSpec(spec);
-      } catch (error) {
-        console.error("Error loading OpenAPI spec", error);
-      }
-    };
+    // Simulate loading time and set isLoading to false when done
+    const timer = setTimeout(() => {
+      setIsLoading(false);  // Hide loader after content is loaded
+    }, 2000);  // Adjust timeout as needed (for now 2 seconds)
 
-    fetchOpenAPIDocs();
+    return () => clearTimeout(timer);
   }, []);
 
-  if (!swaggerSpec) {
-    return <div className="text-center py-10">Loading API Documentation...</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-white text-blue-900 font-sans">
-      <section className="text-center px-6 py-24">
-        <h1 className="text-5xl md:text-6xl font-semibold mb-4">API Documentation</h1>
-        <p className="text-lg text-blue-800 max-w-2xl mx-auto mb-8">
-          View and explore the API documentation for real-time identity and payment verification.
-        </p>
-      </section>
+    <div className="min-h-screen bg-white p-6">
+      <h1 className="text-3xl font-semibold mb-6 text-center">API Documentation</h1>
 
-      <div className="px-4 pb-10">
-        <SwaggerUI spec={swaggerSpec} />
-      </div>
+      {/* Show loader if still loading */}
+      {isLoading ? <Loader /> : <SwaggerClientView />}
     </div>
   );
-};
-
-export default OpenAPIDocs;
+}

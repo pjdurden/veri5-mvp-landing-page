@@ -3,7 +3,7 @@
 import "./globals.css";
 import React, { useState } from "react";
 import { Button } from "components/ui/button";
-import {Card, CardContent} from "components/ui/card";
+import { Card, CardContent } from "components/ui/card";
 import { CheckCircle, ShieldCheck, Zap } from "lucide-react";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
@@ -27,6 +27,7 @@ export default function LandingPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,29 +40,34 @@ export default function LandingPage() {
     }
   };
 
+  const handleViewAPI = () => {
+    setIsLoading(true); // Set loading state to true
+    setTimeout(() => {
+      setIsLoading(false); // After some delay (or real data loading), set loading to false
+    }, 2000); // Simulating loading time (adjust as needed)
+  };
+
   return (
-    
     <div className="min-h-screen bg-white text-blue-900 font-sans">
+      <header className="bg-white text-blue-900 py-4 shadow-md">
+        <div className="max-w-6xl mx-auto flex justify-between items-center px-6">
+          {/* Brand Name and Motto */}
+          <div>
+            <h1 className="text-3xl font-semibold">Veri5</h1>
+            <p className="text-sm text-gray-600 mt-2">The Trust Layer for Digital Payments</p>
+          </div>
 
-    <header className="bg-white text-blue-900 py-4 shadow-md">
-      <div className="max-w-6xl mx-auto flex justify-between items-center px-6">
-        {/* Brand Name and Motto */}
-        <div>
-          <h1 className="text-3xl font-semibold">Veri5</h1>
-          <p className="text-sm text-gray-600 mt-2">The Trust Layer for Digital Payments</p>
+          {/* Waitlist Button */}
+          <div>
+            <Button
+              onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-blue-600 text-white px-6 py-2 rounded-md"
+            >
+              Join Waitlist
+            </Button>
+          </div>
         </div>
-
-        {/* Waitlist Button */}
-        <div>
-          <Button
-            onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md"
-          >
-            Join Waitlist
-          </Button>
-        </div>
-      </div>
-    </header>
+      </header>
 
       {/* Hero */}
       <section className="text-center px-6 py-24">
@@ -102,14 +108,24 @@ export default function LandingPage() {
             </div>
           )}
 
-      <Link href="/openapi-docs">
-        <Button variant="outline" className="border-blue-600 text-blue-600 px-5 py-2 rounded-md">
-          View API Docs
-        </Button>
-      </Link>
+          <Link href="/openapi-docs">
+            <Button 
+              variant="outline" 
+              className="border-blue-600 text-blue-600 px-5 py-2 rounded-md" 
+              onClick={handleViewAPI} // Trigger loading on button click
+            >
+              View API Docs
+            </Button>
+          </Link>
         </div>
       </section>
 
+      {/* Loading Spinner */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-16 h-16 border-4 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
+        </div>
+      )}
       {/* Benefits */}
       <section className="px-6 py-16 max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
         {[{
