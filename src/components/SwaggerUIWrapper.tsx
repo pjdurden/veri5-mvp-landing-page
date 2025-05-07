@@ -6,16 +6,23 @@ import "swagger-ui-react/swagger-ui.css";
 import yaml from "js-yaml";
 import "./styles/swagger-theme.css";
 
+// Define the type for the Swagger spec (you can expand this based on the actual structure of your Swagger spec)
+interface SwaggerSpec {
+  [key: string]: any;
+}
 
 export default function SwaggerUIWrapper() {
-  const [swaggerSpec, setSwaggerSpec] = useState(null);
+  const [swaggerSpec, setSwaggerSpec] = useState<SwaggerSpec | null>(null);
 
   useEffect(() => {
     const fetchSpec = async () => {
       try {
         const res = await fetch("/api-docs.yaml");
+        if (!res.ok) {
+          throw new Error("Failed to fetch the OpenAPI spec");
+        }
         const text = await res.text();
-        const spec = yaml.load(text);
+        const spec = yaml.load(text) as SwaggerSpec; // Cast to SwaggerSpec type
         setSwaggerSpec(spec);
       } catch (err) {
         console.error("Failed to load OpenAPI spec", err);
