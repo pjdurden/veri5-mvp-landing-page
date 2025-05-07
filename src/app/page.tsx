@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "components/ui/button";
+import {Card, CardContent} from "components/ui/card";
 import { CheckCircle, ShieldCheck, Zap } from "lucide-react";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
