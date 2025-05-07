@@ -1,4 +1,4 @@
-import SwaggerClientView from "components/SwaggerClientView";
+import SwaggerClientView from "../../components/SwaggerClientView";
 
 export default function OpenAPIDocsPage() {
   return (
