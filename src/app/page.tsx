@@ -186,7 +186,7 @@ export default function LandingPage() {
         <h2 className="text-3xl font-medium mb-4">Join the Early Access List</h2>
         <p className="text-base text-blue-800 mb-6">Be the first to use our cutting-edge verification API for your platform.</p>
         {submitted ? (
-          <p className="text-lg font-medium text-blue-700">✅ You're on the list!</p>
+          <p className="text-lg font-medium text-blue-700">✅ You&apos;re on the list!</p>
         ) : (
           <form onSubmit={handleSubmit} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
             <input
