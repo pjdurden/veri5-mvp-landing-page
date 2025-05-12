@@ -3,27 +3,111 @@ info:
   title: OpenAPI definition
   version: v0
 servers:
-- url: http://localhost:8080
+- url: http://prajjwal-new-veri4-env.eba-rmce2h6p.us-west-2.elasticbeanstalk.com
   description: Generated server url
 tags:
-- name: Currency API
-  description: Operations related to currency
-- name: SEPA Utilities
-  description: Operations related to SEPA/EU utilities like IBAN and BIC validation
-- name: Card Utilities
-  description: Operations related to card BIN lookup and validation
-- name: India Utilities
-  description: Operations related to Indian utilities like IFSC and Account validation
-- name: SEPA Utilities
-  description: Operations related to currency acceptance validation
-- name: Currency API
-  description: Operations related to currency validation and exchange rates
+- name: Additional Utilities
+  description: Additional Utils for facilitating transcations
+- name: Main utilities
+  description: Operations related to name retrieval using IBAN
+- name: Main utilities
+  description: Operations related to IBAN validation
 paths:
-  /api/sepa/iban/validate:
+  /api/main/name/retrieve:
+    post:
+      tags:
+      - Main utilities
+      summary: Retrieve account holder’s name using IBAN
+      operationId: retrieveName
+      parameters:
+      - name: api-key
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: customer-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: request-id
+        in: header
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NameRetrievalRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/NameRetrievalResponse"
+  /api/main/iban/validate:
+    post:
+      tags:
+      - Main utilities
+      summary: Validate IBAN and retrieve associated metadata
+      operationId: validateIban
+      parameters:
+      - name: api-key
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: customer-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: request-id
+        in: header
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IbanValidationRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/IbanValidationResponse"
+  /api/sepa/bic/validate:
     get:
       tags:
-      - SEPA Utilities
-      operationId: validateIban
+      - Additional Utilities
+      summary: Validate BIC code
+      operationId: validateBic
+      parameters:
+      - name: bic
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ValidationResponse"
+  /api/logical/iban/validate:
+    get:
+      tags:
+      - Additional Utilities
+      summary: Logical Validations on IBAN Number
+      operationId: validateIban_1
       parameters:
       - name: iban
         in: query
@@ -44,29 +128,10 @@ paths:
                 type: object
                 additionalProperties:
                   type: object
-  /api/sepa/bic/validate:
-    get:
-      tags:
-      - SEPA Utilities
-      summary: Validate BIC code
-      operationId: validateBic
-      parameters:
-      - name: bic
-        in: query
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ValidationResponse"
   /api/india/ifsc/validate:
     get:
       tags:
-      - India Utilities
+      - Additional Utilities
       summary: Validate IFSC code using Razorpay IFSC API
       operationId: validateIfsc
       parameters:
@@ -85,7 +150,7 @@ paths:
   /api/india/account/validate:
     get:
       tags:
-      - India Utilities
+      - Additional Utilities
       summary: Validate Indian bank account number
       operationId: validateAccountNumber
       parameters:
@@ -104,7 +169,7 @@ paths:
   /api/currency/rates:
     get:
       tags:
-      - Currency API
+      - Additional Utilities
       summary: Get latest exchange rates
       description: "Fetches latest foreign exchange rates based on the given base\
         \ currency. If target currency is provided, returns the rate for that target\
@@ -134,7 +199,8 @@ paths:
   /api/currency/isAccepted:
     get:
       tags:
-      - Currency API
+      - Additional Utilities
+      summary: Validate Country and Currency combination
       operationId: isCurrencyAccepted
       parameters:
       - name: countryCode
@@ -157,7 +223,7 @@ paths:
   /api/card/lookup/{bin}:
     get:
       tags:
-      - Card Utilities
+      - Additional Utilities
       summary: Lookup card information
       description: "Fetches card scheme, type, brand, bank, and country details using\
         \ the card BIN number"
@@ -177,6 +243,40 @@ paths:
                 $ref: "#/components/schemas/BinlistCardResponse"
 components:
   schemas:
+    NameRetrievalRequest:
+      type: object
+      properties:
+        iban:
+          type: string
+        partnerCode:
+          type: string
+    NameRetrievalResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        message:
+          type: string
+        accountCurrencyCode:
+          type: string
+    IbanValidationRequest:
+      type: object
+      properties:
+        iban:
+          type: string
+        identification:
+          type: string
+        partnerCode:
+          type: string
+    IbanValidationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        accountCurrencyCode:
+          type: string
+        valid:
+          type: boolean
     ValidationResponse:
       type: object
       properties:
