@@ -3,7 +3,7 @@ info:
   title: OpenAPI definition
   version: v0
 servers:
-- url: http://prajjwal-new-veri4-env.eba-rmce2h6p.us-west-2.elasticbeanstalk.com
+- url: https://prajjwal-new-veri4-env.eba-rmce2h6p.us-west-2.elasticbeanstalk.com
   description: Generated server url
 tags:
 - name: Additional Utilities
