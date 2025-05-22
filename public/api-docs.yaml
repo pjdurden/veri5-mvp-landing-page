@@ -1,401 +1,617 @@
-openapi: 3.0.1
-info:
-  title: OpenAPI definition
-  version: v0
-servers:
-- url: https://prajjwal-new-veri4-env.eba-rmce2h6p.us-west-2.elasticbeanstalk.com
-  description: Generated server url
-tags:
-- name: Additional Utilities
-  description: Additional Utils for facilitating transcations
-- name: Main utilities
-  description: Operations related to name retrieval using IBAN
-- name: Main utilities
-  description: Operations related to IBAN validation
-paths:
-  /api/main/name/retrieve:
-    post:
-      tags:
-      - Main utilities
-      summary: Retrieve account holder’s name using IBAN
-      operationId: retrieveName
-      parameters:
-      - name: api-key
-        in: header
-        required: true
-        schema:
-          type: string
-      - name: customer-id
-        in: header
-        required: true
-        schema:
-          type: string
-      - name: request-id
-        in: header
-        required: false
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/NameRetrievalRequest"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/NameRetrievalResponse"
-  /api/main/iban/validate:
-    post:
-      tags:
-      - Main utilities
-      summary: Validate IBAN and retrieve associated metadata
-      operationId: validateIban
-      parameters:
-      - name: api-key
-        in: header
-        required: true
-        schema:
-          type: string
-      - name: customer-id
-        in: header
-        required: true
-        schema:
-          type: string
-      - name: request-id
-        in: header
-        required: false
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/IbanValidationRequest"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/IbanValidationResponse"
-  /api/sepa/bic/validate:
-    get:
-      tags:
-      - Additional Utilities
-      summary: Validate BIC code
-      operationId: validateBic
-      parameters:
-      - name: bic
-        in: query
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ValidationResponse"
-  /api/logical/iban/validate:
-    get:
-      tags:
-      - Additional Utilities
-      summary: Logical Validations on IBAN Number
-      operationId: validateIban_1
-      parameters:
-      - name: iban
-        in: query
-        required: true
-        schema:
-          type: string
-      - name: countryCode
-        in: query
-        required: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-  /api/india/ifsc/validate:
-    get:
-      tags:
-      - Additional Utilities
-      summary: Validate IFSC code using Razorpay IFSC API
-      operationId: validateIfsc
-      parameters:
-      - name: ifscCode
-        in: query
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/IfscValidationResponse"
-  /api/india/account/validate:
-    get:
-      tags:
-      - Additional Utilities
-      summary: Validate Indian bank account number
-      operationId: validateAccountNumber
-      parameters:
-      - name: accountNumber
-        in: query
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ValidationResponse"
-  /api/currency/rates:
-    get:
-      tags:
-      - Additional Utilities
-      summary: Get latest exchange rates
-      description: "Fetches latest foreign exchange rates based on the given base\
-        \ currency. If target currency is provided, returns the rate for that target\
-        \ only."
-      operationId: getRates
-      parameters:
-      - name: base
-        in: query
-        description: "Base currency code (default: EUR)"
-        required: false
-        schema:
-          type: string
-          default: EUR
-      - name: target
-        in: query
-        description: Optional target currency code
-        required: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/CurrencyRateResponse"
-  /api/currency/isAccepted:
-    get:
-      tags:
-      - Additional Utilities
-      summary: Validate Country and Currency combination
-      operationId: isCurrencyAccepted
-      parameters:
-      - name: countryCode
-        in: query
-        required: true
-        schema:
-          type: string
-      - name: currencyCode
-        in: query
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: boolean
-  /api/card/lookup/{bin}:
-    get:
-      tags:
-      - Additional Utilities
-      summary: Lookup card information
-      description: "Fetches card scheme, type, brand, bank, and country details using\
-        \ the card BIN number"
-      operationId: lookupCard
-      parameters:
-      - name: bin
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/BinlistCardResponse"
-components:
-  schemas:
-    NameRetrievalRequest:
-      type: object
-      properties:
-        iban:
-          type: string
-        partnerCode:
-          type: string
-    NameRetrievalResponse:
-      type: object
-      properties:
-        name:
-          type: string
-        message:
-          type: string
-        accountCurrencyCode:
-          type: string
-    IbanValidationRequest:
-      type: object
-      properties:
-        iban:
-          type: string
-        identification:
-          type: string
-        partnerCode:
-          type: string
-    IbanValidationResponse:
-      type: object
-      properties:
-        message:
-          type: string
-        accountCurrencyCode:
-          type: string
-        valid:
-          type: boolean
-    ValidationResponse:
-      type: object
-      properties:
-        input:
-          type: string
-          description: Input value that was validated
-          example: DEUTDEFF
-        valid:
-          type: boolean
-      description: Generic response for validation APIs
-    IfscValidationResponse:
-      type: object
-      properties:
-        valid:
-          type: boolean
-          description: Indicates whether the IFSC code is valid or not
-        IFSC:
-          type: string
-          description: The IFSC code that was validated
-        BANK:
-          type: string
-          description: Bank name associated with the IFSC code
-        BRANCH:
-          type: string
-          description: Branch name associated with the IFSC code
-        CITY:
-          type: string
-          description: City where the branch is located
-        ADDRESS:
-          type: string
-          description: Address of the branch
-        CONTACT:
-          type: string
-          description: Contact number of the branch
-        IMPS:
-          type: boolean
-          description: Whether the branch supports IMPS
-        UPI:
-          type: boolean
-          description: Whether the branch supports UPI
-        RTGS:
-          type: boolean
-          description: Whether the branch supports RTGS
-        NEFT:
-          type: boolean
-          description: Whether the branch supports NEFT
-        MICR:
-          type: string
-          description: MICR code of the branch (nullable)
-        SWIFT:
-          type: string
-          description: SWIFT code of the branch (nullable)
-        STATE:
-          type: string
-          description: The state associated with the branch
-        DISTRICT:
-          type: string
-          description: The district where the branch is located
-        ISO3166:
-          type: string
-          description: The ISO 3166 code for the state
-        BANKCODE:
-          type: string
-          description: The bank code
-      description: Response for IFSC validation
-    CurrencyRateResponse:
-      type: object
-      properties:
-        baseCurrency:
-          type: string
-          description: Base currency (always EUR for ECB)
-        date:
-          type: string
-          description: Date for which rates are provided
-        rates:
-          type: object
-          additionalProperties:
-            type: number
-            description: Exchange rates map (Currency Code -> Rate)
-            format: double
-          description: Exchange rates map (Currency Code -> Rate)
-      description: Response for ECB currency exchange rates against EUR
-    Bank:
-      type: object
-      properties:
-        name:
-          type: string
-        phone:
-          type: string
-        url:
-          type: string
-      description: "Bank details (name, phone, website)"
-    BinlistCardResponse:
-      type: object
-      properties:
-        scheme:
-          type: string
-          description: "Scheme or network (visa, mastercard etc.)"
-        brand:
-          type: string
-          description: "Card brand (Platinum, Signature, etc.)"
-        type:
-          type: string
-          description: Card type (debit or credit)
-        prepaid:
-          type: boolean
-          description: Whether the card is prepaid
-        country:
-          $ref: "#/components/schemas/Country"
-        bank:
-          $ref: "#/components/schemas/Bank"
-      description: Response for card BIN lookup using Binlist API
-    Country:
-      type: object
-      properties:
-        name:
-          type: string
-        currency:
-          type: string
-        emoji:
-          type: string
-      description: "Country details (name, currency, emoji)"
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "https://api.veri5.tech"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Additional Utilities",
+      "description": "Additional Utils for facilitating transcations"
+    },
+    {
+      "name": "Main utilities",
+      "description": "Operations related to name retrieval using IBAN"
+    },
+    {
+      "name": "Main utilities",
+      "description": "Operations related to IBAN validation"
+    }
+  ],
+  "paths": {
+    "/api/main/name/retrieve": {
+      "post": {
+        "tags": [
+          "Main utilities"
+        ],
+        "summary": "Retrieve account holder’s name using IBAN",
+        "operationId": "retrieveName",
+        "parameters": [
+          {
+            "name": "api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customer-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "request-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NameRetrievalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/NameRetrievalResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/main/iban/validate": {
+      "post": {
+        "tags": [
+          "Main utilities"
+        ],
+        "summary": "Validate IBAN and retrieve associated metadata",
+        "operationId": "validateIban",
+        "parameters": [
+          {
+            "name": "api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customer-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "request-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IbanValidationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/IbanValidationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sepa/bic/validate": {
+      "get": {
+        "tags": [
+          "Additional Utilities"
+        ],
+        "summary": "Validate BIC code",
+        "operationId": "validateBic",
+        "parameters": [
+          {
+            "name": "bic",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logical/iban/validate": {
+      "get": {
+        "tags": [
+          "Additional Utilities"
+        ],
+        "summary": "Logical Validations on IBAN Number",
+        "operationId": "validateIban_1",
+        "parameters": [
+          {
+            "name": "iban",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "countryCode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/india/ifsc/validate": {
+      "get": {
+        "tags": [
+          "Additional Utilities"
+        ],
+        "summary": "Validate IFSC code using Razorpay IFSC API",
+        "operationId": "validateIfsc",
+        "parameters": [
+          {
+            "name": "ifscCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/IfscValidationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/india/account/validate": {
+      "get": {
+        "tags": [
+          "Additional Utilities"
+        ],
+        "summary": "Validate Indian bank account number",
+        "operationId": "validateAccountNumber",
+        "parameters": [
+          {
+            "name": "accountNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/currency/rates": {
+      "get": {
+        "tags": [
+          "Additional Utilities"
+        ],
+        "summary": "Get latest exchange rates",
+        "description": "Fetches latest foreign exchange rates based on the given base currency. If target currency is provided, returns the rate for that target only.",
+        "operationId": "getRates",
+        "parameters": [
+          {
+            "name": "base",
+            "in": "query",
+            "description": "Base currency code (default: EUR)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "EUR"
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "description": "Optional target currency code",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrencyRateResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/currency/isAccepted": {
+      "get": {
+        "tags": [
+          "Additional Utilities"
+        ],
+        "summary": "Validate Country and Currency combination",
+        "operationId": "isCurrencyAccepted",
+        "parameters": [
+          {
+            "name": "countryCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "currencyCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/card/lookup/{bin}": {
+      "get": {
+        "tags": [
+          "Additional Utilities"
+        ],
+        "summary": "Lookup card information",
+        "description": "Fetches card scheme, type, brand, bank, and country details using the card BIN number",
+        "operationId": "lookupCard",
+        "parameters": [
+          {
+            "name": "bin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/BinlistCardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NameRetrievalRequest": {
+        "type": "object",
+        "properties": {
+          "iban": {
+            "type": "string"
+          },
+          "partnerCode": {
+            "type": "string"
+          }
+        }
+      },
+      "NameRetrievalResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "accountCurrencyCode": {
+            "type": "string"
+          }
+        }
+      },
+      "IbanValidationRequest": {
+        "type": "object",
+        "properties": {
+          "iban": {
+            "type": "string"
+          },
+          "identification": {
+            "type": "string"
+          },
+          "partnerCode": {
+            "type": "string"
+          }
+        }
+      },
+      "IbanValidationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "accountCurrencyCode": {
+            "type": "string"
+          },
+          "valid": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ValidationResponse": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "Input value that was validated",
+            "example": "DEUTDEFF"
+          },
+          "valid": {
+            "type": "boolean"
+          }
+        },
+        "description": "Generic response for validation APIs"
+      },
+      "IfscValidationResponse": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean",
+            "description": "Indicates whether the IFSC code is valid or not"
+          },
+          "IFSC": {
+            "type": "string",
+            "description": "The IFSC code that was validated"
+          },
+          "BANK": {
+            "type": "string",
+            "description": "Bank name associated with the IFSC code"
+          },
+          "BRANCH": {
+            "type": "string",
+            "description": "Branch name associated with the IFSC code"
+          },
+          "CITY": {
+            "type": "string",
+            "description": "City where the branch is located"
+          },
+          "ADDRESS": {
+            "type": "string",
+            "description": "Address of the branch"
+          },
+          "CONTACT": {
+            "type": "string",
+            "description": "Contact number of the branch"
+          },
+          "IMPS": {
+            "type": "boolean",
+            "description": "Whether the branch supports IMPS"
+          },
+          "UPI": {
+            "type": "boolean",
+            "description": "Whether the branch supports UPI"
+          },
+          "RTGS": {
+            "type": "boolean",
+            "description": "Whether the branch supports RTGS"
+          },
+          "NEFT": {
+            "type": "boolean",
+            "description": "Whether the branch supports NEFT"
+          },
+          "MICR": {
+            "type": "string",
+            "description": "MICR code of the branch (nullable)"
+          },
+          "SWIFT": {
+            "type": "string",
+            "description": "SWIFT code of the branch (nullable)"
+          },
+          "STATE": {
+            "type": "string",
+            "description": "The state associated with the branch"
+          },
+          "DISTRICT": {
+            "type": "string",
+            "description": "The district where the branch is located"
+          },
+          "ISO3166": {
+            "type": "string",
+            "description": "The ISO 3166 code for the state"
+          },
+          "BANKCODE": {
+            "type": "string",
+            "description": "The bank code"
+          }
+        },
+        "description": "Response for IFSC validation"
+      },
+      "CurrencyRateResponse": {
+        "type": "object",
+        "properties": {
+          "baseCurrency": {
+            "type": "string",
+            "description": "Base currency (always EUR for ECB)"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date for which rates are provided"
+          },
+          "rates": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "description": "Exchange rates map (Currency Code -\u003E Rate)",
+              "format": "double"
+            },
+            "description": "Exchange rates map (Currency Code -\u003E Rate)"
+          }
+        },
+        "description": "Response for ECB currency exchange rates against EUR"
+      },
+      "Bank": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "description": "Bank details (name, phone, website)"
+      },
+      "BinlistCardResponse": {
+        "type": "object",
+        "properties": {
+          "scheme": {
+            "type": "string",
+            "description": "Scheme or network (visa, mastercard etc.)"
+          },
+          "brand": {
+            "type": "string",
+            "description": "Card brand (Platinum, Signature, etc.)"
+          },
+          "type": {
+            "type": "string",
+            "description": "Card type (debit or credit)"
+          },
+          "prepaid": {
+            "type": "boolean",
+            "description": "Whether the card is prepaid"
+          },
+          "country": {
+            "$ref": "#/components/schemas/Country"
+          },
+          "bank": {
+            "$ref": "#/components/schemas/Bank"
+          }
+        },
+        "description": "Response for card BIN lookup using Binlist API"
+      },
+      "Country": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": "string"
+          }
+        },
+        "description": "Country details (name, currency, emoji)"
+      }
+    }
+  }
+}
